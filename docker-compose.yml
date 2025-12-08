@@ -1,0 +1,13 @@
+services:
+  notification-service:
+    build: .
+    container_name: notification-service
+    ports:
+      - "8081:8081"
+    restart: always
+    networks:
+      - neosoft-net
+
+networks:
+  neosoft-net:
+    driver: bridge
