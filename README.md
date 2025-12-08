@@ -95,6 +95,7 @@ Even if a user is offline:
 
 ## 📂 Project Structure
 
+```bash
 internal/
 │
 ├── http/
@@ -112,7 +113,7 @@ internal/
 cmd/server/main.go # Application entrypoint
 Dockerfile # Distroless production image
 docker-compose.yml # Easy deployment
-
+```
 
 
 ---
