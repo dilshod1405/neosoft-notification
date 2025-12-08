@@ -123,7 +123,7 @@ docker-compose.yml # Easy deployment
 **POST /publish**
 
 Django backend uses this to broadcast a new notification.
-
+```json
 {
   "id": 14,
   "user_id": 52,
@@ -134,34 +134,41 @@ Django backend uses this to broadcast a new notification.
   "action_url": "/courses",
   "created_at": "2025-01-15T10:00:00Z"
 }
+
+```
+
 🔌 WebSocket Endpoint
 GET /ws?user_id={id}
 
 Example:
 
-bash
-Копировать код
+``` bash
 ws://localhost:8081/ws?user_id=52
 Real-time message format:
-json
-Копировать код
+```
+
+```json
 {
   "title": "New Message",
   "message": "Your lesson has been updated",
   "type": "info"
 }
+```
+
 🖥️ WebSocket Client Example (React / Next.js)
-javascript
-Копировать код
+
+```javascript
 const socket = new WebSocket(`ws://localhost:8081/ws?user_id=${userId}`);
 
 socket.onmessage = (event) => {
   const notif = JSON.parse(event.data);
   console.log("Real-time:", notif);
 };
+
+```
 🐳 Dockerfile (Distroless Production Build)
-dockerfile
-Копировать код
+
+```dockerfile
 FROM golang:1.23 AS build
 
 WORKDIR /app
@@ -176,10 +183,11 @@ COPY --from=build /app/notification /app/notification
 
 EXPOSE 8081
 ENTRYPOINT ["/app/notification"]
+```
+
 🐳 Docker Compose
-yaml
-Копировать код
-version: "3.9"
+
+```yaml
 
 services:
   notification-service:
@@ -193,20 +201,22 @@ services:
 networks:
   neosoft-net:
     driver: bridge
-🧩 Key Advantages
-🟩 Fast
+```
+
+## 🧩 Key Advantages
+### 🟩 Fast
 Handles thousands of concurrent connections with minimal memory usage.
 
-🟩 Reliable
+### 🟩 Reliable
 If user is offline, Django stores notifications safely.
 
-🟩 Clean Architecture
+### 🟩 Clean Architecture
 Stateless Go service — easy to scale horizontally.
 
-🟩 Secure
+### 🟩 Secure
 Distroless image → no shell, no package manager, minimal attack surface.
 
-🟩 Professional
+### 🟩 Professional
 Perfect for microservice-based enterprise platforms.
 
 👨‍💻 Author
