@@ -1,93 +1,222 @@
-# edu neosoft notification service
+# 📡 Real-Time Notification Service  
+**High-performance WebSocket service built with Go**, designed for instant, reliable delivery of notifications across the Neosoft education platform.
+
+This service powers **real-time communication** between backend (Django) and users (mentors & students).  
+Perfect for distributed systems, microservice environments, and modern SaaS dashboards.
+
+---
+
+<div align="center">
+  
+### ⚡ Ultra-Fast • 🧽 Clean Architecture • 🔐 Secure • 🐳 Dockerized • 📊 Production-Ready
+
+</div>
+
+---
+
+## 🏗️ Architecture Overview
+
+**Django** handles business logic + Notification storage.  
+**Go Notification Service** handles WebSocket delivery instantly.  
+Clients receive messages in **real-time**, even under high load.
 
 
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+                   ┌──────────────────────────┐
+                   │        Django API        │
+                   │  Notification created    │
+                   └─────────────┬────────────┘
+                                 │ POST /publish
+                                 ▼
+                   ┌──────────────────────────┐
+                   │   Go Notification Svc    │
+                   │  (WebSocket Broadcaster) │
+                   └─────────────┬────────────┘
+                                 │ WS Push
+                                 ▼
+                   ┌──────────────────────────┐
+                   │   Web / Mobile Clients   │
+                   │ React / Flutter / etc.   │
+                   └──────────────────────────┘
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
 
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/edvent/edu-neosoft-notification-service.git
-git branch -M main
-git push -uf origin main
-```
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://gitlab.com/edvent/edu-neosoft-notification-service/-/settings/integrations)
+## 🧠 Core Concepts
 
-## Collaborate with your team
+### ✔ **Real-Time Delivery**
+Each connected user holds a dedicated WebSocket channel.  
+Notifications are pushed instantly using lightweight Go routines.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### ✔ **User-Specific Channels**
+Connections are mapped as:
 
-## Test and Deploy
 
-Use the built-in continuous integration in GitLab.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-***
+user_id -> active WebSocket clients
 
-# Editing this README
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
-## Suggestions for a good README
+A user with multiple tabs/devices receives notifications everywhere instantly.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### ✔ **Super-Light Runtime**
+Final production image is built using **Distroless**:
+- No shell  
+- No package manager  
+- Minimal attack surface  
+- Ultra-fast & secure
 
-## Name
-Choose a self-explaining name for your project.
+### ✔ **Offline-Safe**
+Even if a user is offline:
+- Django stores the notification  
+- User reads it later via REST API  
+- WebSocket is only for real-time delivery
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+---
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## 🛠️ Technology Stack
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+| Layer | Technology |
+|-------|------------|
+| Language | **Go 1.23** |
+| Framework | **Gin** (HTTP router) |
+| WebSockets | **Gorilla/WebSocket** |
+| Runtime | **Distroless (Debian 11)** |
+| Deployment | Docker & Docker Compose |
+| Architecture | Microservice, Event-driven push |
+| Backend paired with | Django REST Framework |
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+---
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## 📂 Project Structure
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+internal/
+│
+├── http/
+│ ├── handler.go # POST /publish (Django → Go)
+│ └── router.go # Service routing
+│
+├── websocket/
+│ ├── hub.go # Manages all users & connections
+│ ├── client.go # Single WS client logic
+│ └── upgrader.go # HTTP → WebSocket upgrader
+│
+└── models/
+└── notification.go # Notification payload model
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+cmd/server/main.go # Application entrypoint
+Dockerfile # Distroless production image
+docker-compose.yml # Easy deployment
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+---
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## 🔌 API Endpoints
 
-## License
-For open source projects, say how it is licensed.
+### 1️⃣ Publish Notification  
+**POST /publish**
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Django backend uses this to broadcast a new notification.
+
+```json
+{
+  "id": 14,
+  "user_id": 52,
+  "type": "promo",
+  "title": "Holiday Discount",
+  "message": "Chegirmalar boshlandi!",
+  "metadata": { "discount": 30 },
+  "action_url": "/courses",
+  "created_at": "2025-01-15T10:00:00Z"
+}
+
+
+
+2️⃣ WebSocket Endpoint
+
+GET /ws?user_id={id}
+
+Example:
+
+ws://localhost:8081/ws?user_id=52
+
+
+Real-time messages arrive as JSON:
+
+{
+  "title": "New Message",
+  "message": "Your lesson has been updated",
+  "type": "info"
+}
+
+🖥️ Client Example (React/Next.js)
+const socket = new WebSocket(`ws://localhost:8081/ws?user_id=${userId}`);
+
+socket.onmessage = (event) => {
+  const notif = JSON.parse(event.data);
+  console.log("Real-time:", notif);
+};
+
+🐳 Docker (Production Ready)
+Dockerfile (Distroless)
+FROM golang:1.23 AS build
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o notification ./cmd/server
+
+FROM gcr.io/distroless/base-debian11
+WORKDIR /app
+COPY --from=build /app/notification /app/notification
+EXPOSE 8081
+ENTRYPOINT ["/app/notification"]
+
+Docker Compose
+version: "3.9"
+
+services:
+  notification-service:
+    build: .
+    ports:
+      - "8081:8081"
+    restart: always
+    networks:
+      - neosoft-net
+
+networks:
+  neosoft-net:
+    driver: bridge
+
+🧩 Key Advantages
+🟩 Fast
+
+Handles thousands of concurrent connections with minimal memory.
+
+🟩 Reliable
+
+Even if client disconnects, Django stores the notification.
+
+🟩 Clean
+
+Stateless architecture makes scaling trivial.
+
+🟩 Secure
+
+Distroless → Zero shell, zero bloat.
+
+🟩 Professional
+
+Ideal for microservice-based platforms.
+
+🧑‍💻 Author
+
+Dilshodjon Normurodov
+Real-time systems • Microservices • Go • Django • DevOps
