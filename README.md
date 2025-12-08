@@ -124,7 +124,6 @@ docker-compose.yml # Easy deployment
 
 Django backend uses this to broadcast a new notification.
 
-```json
 {
   "id": 14,
   "user_id": 52,
@@ -135,36 +134,34 @@ Django backend uses this to broadcast a new notification.
   "action_url": "/courses",
   "created_at": "2025-01-15T10:00:00Z"
 }
-
-
-
-2️⃣ WebSocket Endpoint
-
+🔌 WebSocket Endpoint
 GET /ws?user_id={id}
 
 Example:
 
+bash
+Копировать код
 ws://localhost:8081/ws?user_id=52
-
-
-Real-time messages arrive as JSON:
-
+Real-time message format:
+json
+Копировать код
 {
   "title": "New Message",
   "message": "Your lesson has been updated",
   "type": "info"
 }
-
-🖥️ Client Example (React/Next.js)
+🖥️ WebSocket Client Example (React / Next.js)
+javascript
+Копировать код
 const socket = new WebSocket(`ws://localhost:8081/ws?user_id=${userId}`);
 
 socket.onmessage = (event) => {
   const notif = JSON.parse(event.data);
   console.log("Real-time:", notif);
 };
-
-🐳 Docker (Production Ready)
-Dockerfile (Distroless)
+🐳 Dockerfile (Distroless Production Build)
+dockerfile
+Копировать код
 FROM golang:1.23 AS build
 
 WORKDIR /app
@@ -176,10 +173,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o notification ./cmd/server
 FROM gcr.io/distroless/base-debian11
 WORKDIR /app
 COPY --from=build /app/notification /app/notification
+
 EXPOSE 8081
 ENTRYPOINT ["/app/notification"]
-
-Docker Compose
+🐳 Docker Compose
+yaml
+Копировать код
 version: "3.9"
 
 services:
@@ -194,29 +193,22 @@ services:
 networks:
   neosoft-net:
     driver: bridge
-
 🧩 Key Advantages
 🟩 Fast
-
-Handles thousands of concurrent connections with minimal memory.
+Handles thousands of concurrent connections with minimal memory usage.
 
 🟩 Reliable
+If user is offline, Django stores notifications safely.
 
-Even if client disconnects, Django stores the notification.
-
-🟩 Clean
-
-Stateless architecture makes scaling trivial.
+🟩 Clean Architecture
+Stateless Go service — easy to scale horizontally.
 
 🟩 Secure
-
-Distroless → Zero shell, zero bloat.
+Distroless image → no shell, no package manager, minimal attack surface.
 
 🟩 Professional
+Perfect for microservice-based enterprise platforms.
 
-Ideal for microservice-based platforms.
-
-🧑‍💻 Author
-
+👨‍💻 Author
 Dilshodjon Normurodov
-Real-time systems • Microservices • Go • Django • DevOps
+Real-time Systems • Microservices • Go • Django • DevOps
