@@ -1,43 +1,19 @@
-📡 Real-Time Notification Service
+# 🏗️ Architecture Overview
+## 🔄 End-to-End Notification Flow
 
-High-performance WebSocket service built with Go, powered by Redis Streams for guaranteed, scalable, fault-tolerant delivery.
+```bash
+flowchart TD
+    A[Django API\n(Notification created)] --> B[Redis Streams\nDurable Event Queue]
+    B --> C[Go Notification Service\nWebSocket Broadcaster]
+    C --> D[Connected Clients\nWeb, Mobile, Desktop]
+```
 
-This service enables instant real-time notifications across the entire Neosoft education platform, ensuring messages are delivered reliably even under heavy load.
-
-<div align="center">
-⚡ Ultra-Fast • 📬 Redis-Backed Delivery • 🔐 Secure • 🐳 Dockerized • 📊 Production-Ready
-</div>
-🏗️ Architecture Overview
-Notification Flow
-
-
-Django (creates notification)
-        │
-        ▼
-Redis Streams (event queue — durable)
-        │  subscriber
-        ▼
-Go Notification Service (WebSocket broadcaster)
-        │
-        ▼
-Users (mentors / students via WS)
-
-
-
-What each part does:
-Layer	Responsibility
-Django API	Creates & stores notifications in DB
-Redis Streams	Guarantees message durability & delivery order
-Go WebSocket Service	Pushes real-time notifications to active users
-Clients (Web/Flutter)	Receive instant WS messages
-🔥 Why Redis Streams?
-✔ Messages are never lost, even if Go server restarts
-✔ Horizontal scaling becomes trivial (multiple Go WS servers)
-✔ Backpressure handled cleanly
-✔ Redis groups prevent duplicate delivery
-✔ Perfect for microservice event-driven architectures
-
-Redis Streams = reliable event queue → WebSocket server = pure delivery engine.
+## 🧩 Component Responsibilities
+### Component	Role
+ - Django API	Creates notifications and stores them in the database
+ - Redis Streams	Reliable event queue ensuring ordering, durability, and consumer-group delivery
+ - Go WebSocket Service	Reads notifications from Redis and pushes real-time updates to online users
+ - Clients (React / Flutter / etc.)	Connect via WebSocket and receive instant real-time messages
 
 ```bash
 📂 Project Structure
@@ -62,8 +38,9 @@ Dockerfile               # Distroless production build
 docker-compose.yml       # Deployment config
 ```
 
-🔌 API Flow (NEW — Redis version)
-✔ Django → Redis Streams
+## 🔌 API Flow (NEW — Redis version)
+
+### ✔ Django → Redis Streams
 
 Instead of calling Go directly, Django writes to Redis:
 
@@ -72,7 +49,7 @@ r.xadd("notifications_stream", {"data": json.dumps(notification)})
 ```
 
 
-Example notification written to Redis:
+### Example notification written to Redis:
 
 ```json
 {
@@ -90,7 +67,7 @@ Example notification written to Redis:
 }
 ```
 
-✔ Go Service (Redis Consumer)
+### ✔ Go Service (Redis Consumer)
 
 The Go service listens on Redis Streams:
 
@@ -101,7 +78,7 @@ XREADGROUP GROUP notif_group notif_worker STREAMS notifications_stream >
 
 Every event becomes a WebSocket push for that specific user.
 
-🌐 WebSocket Endpoint
+## 🌐 WebSocket Endpoint
 
 Connect:
 ```bash
@@ -127,7 +104,7 @@ Real-time message example:
 }
 ```
 
-🖥️ WebSocket Client Example (React)
+## 🖥️ WebSocket Client Example (React)
 
 ```javascript
 const socket = new WebSocket(`ws://localhost:8081/ws?user_id=${userId}`);
@@ -139,7 +116,7 @@ socket.onmessage = (event) => {
 ```
 
 
-🐳 Dockerfile (Redis-powered Distroless Build)
+## 🐳 Dockerfile (Redis-powered Distroless Build)
 
 ```Dockerfile
 FROM golang:1.23 AS build
@@ -160,7 +137,7 @@ EXPOSE 8081
 ENTRYPOINT ["/app/notification"]
 ```
 
-🐳 Docker Compose
+## 🐳 Docker Compose
 
 ```YAML
 services:
@@ -185,36 +162,36 @@ networks:
     driver: bridge
 ```
 
-🧩 Key Advantages
-🟩 Blazing Fast
+## 🧩 Key Advantages
+### 🟩 Blazing Fast
 
-Go routines + Redis Streams → thousands of WS connections with minimal CPU.
+- Go routines + Redis Streams → thousands of WS connections with minimal CPU.
 
-🟩 Reliable Delivery
+## 🟩 Reliable Delivery
 
-Messages survive:
+### Messages survive:
 
-Go crashes
+- Go crashes
 
-Network failures
+- Network failures
 
-High load
+- High load
 
-Guaranteed by Redis Streams.
+- Guaranteed by Redis Streams.
 
-🟩 Scalable
+### 🟩 Scalable
 
-Add multiple Go instances — Redis handles load balancing.
+- Add multiple Go instances — Redis handles load balancing.
 
-🟩 Secure
+### 🟩 Secure
 
-Distroless → zero shell, minimal attack surface.
+- Distroless → zero shell, minimal attack surface.
 
-🟩 Enterprise Architecture
+### 🟩 Enterprise Architecture
 
-Event-driven, microservice-friendly, horizontally scalable.
+- Event-driven, microservice-friendly, horizontally scalable.
 
-👨‍💻 Author
+### 👨‍💻 Author
 
 Dilshodjon Normurodov
 Real-time Systems • Microservices • Go • Redis • Django • DevOps
