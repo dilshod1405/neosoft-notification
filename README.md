@@ -39,7 +39,7 @@ Dockerfile               # Distroless production build
 docker-compose.yml       # Deployment config
 ```
 
-## 🔌 API Flow (NEW — Redis version)
+## 🔌 Redis version
 
 ### ✔ Django → Redis Streams
 
