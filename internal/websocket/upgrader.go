@@ -3,7 +3,7 @@ package websocket
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"go-notify-service/internal/models"  // 🔥 MUHIM QO‘SHIMCHA
+	"go-notify-service/internal/models"
 	"net/http"
 	"strconv"
 )
