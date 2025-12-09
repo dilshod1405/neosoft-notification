@@ -19,16 +19,17 @@ flowchart TD
 📂 Project Structure
 internal/
 │
-├── stream/
-│   └── consumer.go      # Redis Streams → Go WS bridge
+├── redis/
+│   └── stream_consumer.go      # Redis Streams → Go WS bridge
 │
 ├── websocket/
 │   ├── hub.go           # Manages all connected users
 │   ├── client.go        # Writes messages to WebSocket
-│   └── handler.go       # /ws endpoint (user_id-based session)
+│   └── upgrader.go       # /ws endpoint (user_id-based session)
 │
 ├── http/
-│   └── router.go        # Routes WS & health endpoints
+│   ├── router.go   
+|   └── handler.go      # Routes WS & health endpoints
 │
 └── models/
     └── notification.go  # Notification schema
