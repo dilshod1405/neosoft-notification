@@ -19,27 +19,41 @@ func NewHub() *Hub {
 }
 
 func (h *Hub) Run() {
-	for {
-		select {
+    for {
+        select {
 
-		case client := <-h.Register:
-			if h.Clients[client.UserID] == nil {
-				h.Clients[client.UserID] = make(map[*Client]bool)
-			}
-			h.Clients[client.UserID][client] = true
+        case client := <-h.Register:
+            if h.Clients[client.UserID] == nil {
+                h.Clients[client.UserID] = make(map[*Client]bool)
+            }
+            h.Clients[client.UserID][client] = true
 
-		case client := <-h.Unregister:
-			if clients, ok := h.Clients[client.UserID]; ok {
-				delete(clients, client)
-				close(client.Send)
-			}
+        case client := <-h.Unregister:
+            if clients, ok := h.Clients[client.UserID]; ok {
+                if _, exists := clients[client]; exists {
+                    delete(clients, client)
 
-		case notif := <-h.Broadcast:
-			if clients, ok := h.Clients[notif.UserID]; ok {
-				for c := range clients {
-					c.Send <- notif
-				}
-			}
-		}
-	}
+                    if !client.Closed {
+                        close(client.Send)
+                        client.Closed = true
+                    }
+
+                    if len(clients) == 0 {
+                        delete(h.Clients, client.UserID)
+                    }
+                }
+            }
+
+        case notif := <-h.Broadcast:
+            if clients, ok := h.Clients[notif.UserID]; ok {
+                for c := range clients {
+                    select {
+                    case c.Send <- notif:
+                    default:
+                        h.Unregister <- c
+                    }
+                }
+            }
+        }
+    }
 }

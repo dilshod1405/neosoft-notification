@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 	"strings"
+	"os"
 
 	goredis "github.com/redis/go-redis/v9"
 	"go-notify-service/internal/models"
@@ -17,9 +18,22 @@ type StreamConsumer struct {
 	Hub    *websocket.Hub
 }
 
+
+func getRedisAddr() string {
+	host := os.Getenv("REDIS_HOST")
+	if host == "" {
+		host = "localhost"
+	}
+	port := os.Getenv("REDIS_PORT")
+	if port == "" {
+		port = "6379"
+	}
+	return host + ":" + port
+}
+
 func NewStreamConsumer(hub *websocket.Hub) *StreamConsumer {
 	rdb := goredis.NewClient(&goredis.Options{
-		Addr: "localhost:6379",
+		Addr: getRedisAddr(),
 	})
 
 	return &StreamConsumer{

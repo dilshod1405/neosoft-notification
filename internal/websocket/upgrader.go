@@ -24,10 +24,12 @@ func HandleWebSocket(hub *Hub, c *gin.Context) {
 	client := &Client{
 		UserID: userID,
 		Conn:   conn,
-		Send:   make(chan models.Notification),
+		Send:   make(chan models.Notification, 10),
 	}
 
 	hub.Register <- client
 
-	go client.WritePump()
+	go client.WritePump(hub)
+	go client.ReadPump(hub)
 }
+
